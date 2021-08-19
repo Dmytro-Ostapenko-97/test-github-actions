@@ -26,10 +26,10 @@ jobs:
 
       - name: Terraform fmt
         id: fmt
-        run: terraform fmt -check -recursive
+        run: terraform fmt -check -recursive > fmt.sarif && terraform fmt -check -recursive 
         continue-on-error: true
 
-      - if: steps.fmt.outputs != null
+      - if: steps.main.outcome == 'failure'
         name: Upload Terraform SARIF file
         uses: github/codeql-action/upload-sarif@v1
         with:
