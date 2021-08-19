@@ -24,26 +24,26 @@ jobs:
         with:
           terraform_version: 0.14.9
 
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check -recursive > fmt.sarif && terraform fmt -check -recursive 
         continue-on-error: true
 
-      - if: steps.main.outcome == 'failure'
+      - if: steps.fmt.outcome == 'failure'
         name: Upload Terraform SARIF file
         uses: github/codeql-action/upload-sarif@v1
         with:
           # Path to SARIF file relative to the root of the repository
           sarif_file: fmt.sarif  
-
-      - name: Terraform Init
-        id: init
-        run: terraform init
-
+          
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
-
+        
       - name: Run tfsec
         uses: tfsec/tfsec-sarif-action@9a83b5c3524f825c020e356335855741fd02745f
         with:
